@@ -1,0 +1,12 @@
+set(ENGINE_HEADER)
+set(ENGINE_SOURCE)
+
+# include(engine/action/CMakeLists.txt)
+include(engine/animation/CMakeLists.txt)
+include(engine/base/CMakeLists.txt)
+include(engine/debug/CMakeLists.txt)
+include(engine/pattern/CMakeLists.txt)
+include(engine/platform/CMakeLists.txt)
+include(engine/sdk/CMakeLists.txt)
+include(engine/serialize/CMakeLists.txt)
+include(engine/util/CMakeLists.txt)
