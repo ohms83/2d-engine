@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
 project(external)
 
+message(STATUS "Hello World! WINDOWS=${WINDOWS} MACOSX=${WINDOWS} LINUX=${LINUX}")
+
 option(BUILD_EXT_BOX2D "Build with internal Box2D support" ON)
 option(BUILD_EXT_CHIPMUNK "Build with internal chipmunk support" ON)
 option(BUILD_EXT_FREETYPE2 "Build with internal freetype2 support" ON)
@@ -156,6 +158,7 @@ if(WINDOWS)
 endif()
 
 if(WINDOWS OR MACOSX OR LINUX)
+    message(STATUS "Hello World! WINDOWS=${WINDOWS} MACOSX=${WINDOWS} LINUX=${LINUX}")
     add_subdirectory(glfw3)
     target_link_libraries(external 
         ext_glfw3
