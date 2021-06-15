@@ -55,7 +55,5 @@ set_target_properties(${PROJECT_NAME}
                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
                       FOLDER "Internal"
 )
-# message(STATUS "ENGINE_HEADER=${ENGINE_HEADER}")
-# message(STATUS "ENGINE_SOURCE=${ENGINE_SOURCE}")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
