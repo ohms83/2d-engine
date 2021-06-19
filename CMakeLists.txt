@@ -57,3 +57,17 @@ set_target_properties(${PROJECT_NAME}
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+if(LOG_EMOJI)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE LOG_EMOJI
+    )
+elseif(LOG_COLOR_SCHEME)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE LOG_COLOR_SCHEME
+    )
+endif()
+
+target_compile_definitions(${PROJECT_NAME}
+    PUBLIC $<$<CONFIG:Debug>:DEBUG=1>
+)
