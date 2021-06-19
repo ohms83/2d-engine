@@ -30,7 +30,7 @@
 #include "engine/serialize/Config.hpp"
 #include "engine/util/CocosUtil.hpp"
 
-#include "game/scene/SceneFactory.hpp"
+#include "scene/SceneFactory.hpp"
 
 //#define USE_AUDIO_ENGINE 1
 
@@ -79,7 +79,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     debug::Log::init(new debug::CCLogger());
     
     // Load system configurations
-    serialize::Config config;
+    serialize::Config systemConfig, gameConfig;
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
     std::string platform = "Desktop";
 #else
@@ -87,19 +87,29 @@ bool AppDelegate::applicationDidFinishLaunching()
 #endif
     // Cannot use fstream to read the config file during initialization; seems like there are some
     // lags during file system initialization and the file won't be loaded properly.
-    std::string fileData = cocos2d::FileUtils::getInstance()->getStringFromFile("configs/system.ini");
-    config.parse(fileData);
-    designResolutionSize.width = config.get<float>(platform, "screenWidth", designResolutionSize.width);
-    designResolutionSize.height = config.get<float>(platform, "screenHeight", designResolutionSize.height);
+    {
+        std::string fileData = cocos2d::FileUtils::getInstance()->getStringFromFile("config/system.ini");
+        systemConfig.parse(fileData);
+    }
+    {
+        std::string fileData = cocos2d::FileUtils::getInstance()->getStringFromFile("config/game.ini");
+        gameConfig.parse(fileData);
+    }
+    
+    designResolutionSize.width = systemConfig.get<float>(platform, "screenWidth", designResolutionSize.width);
+    designResolutionSize.height = systemConfig.get<float>(platform, "screenHeight", designResolutionSize.height);
     
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
+        std::string appName = gameConfig.getString("Info", "name");
+        LOG_ASSERT(!appName.empty(), "Undefined application name. Please try running 'setup.py -n <appname>' at least once.");
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("BomberMan", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+        glview = GLViewImpl::createWithRect(appName, cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
-        glview = GLViewImpl::create("BomberMan");
+        glview = GLViewImpl::create(appName);
 #endif
         director->setOpenGLView(glview);
     }
@@ -132,10 +142,6 @@ bool AppDelegate::applicationDidFinishLaunching()
     register_all_packages();
 
     {
-        std::string fileData = cocos2d::FileUtils::getInstance()->getStringFromFile("configs/game.ini");
-        serialize::Config gameConfig;
-        gameConfig.parse(fileData);
-        
         // create a scene. it's an autorelease object
         std::string firstScene = gameConfig.getString("Startup", "scene");
         LOG_ASSERT(!firstScene.empty(), "'[Startup] scene' parameter is not defined");

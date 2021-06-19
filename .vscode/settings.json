@@ -1,5 +1,15 @@
 {
     "files.associations": {
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "__functional_base": "cpp",
+        "array": "cpp",
+        "future": "cpp",
+        "istream": "cpp",
+        "locale": "cpp",
+        "memory": "cpp",
+        "thread": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp",
+        "vector": "cpp"
     }
 }
