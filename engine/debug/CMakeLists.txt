@@ -8,4 +8,5 @@ list(APPEND ENGINE_HEADER
 list(APPEND ENGINE_SOURCE
     engine/debug/DebugConst.cpp
     engine/debug/Log.cpp
+    engine/debug/cocos/CCLogger.cpp
 )

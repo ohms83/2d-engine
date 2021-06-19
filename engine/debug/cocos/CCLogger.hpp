@@ -15,18 +15,10 @@ namespace debug
     class CCLogger : public Logger
     {
     public:
-        void logDebug(const char* message) override
-        {
-            CCLOG( "%s", message );
-        }
-        void logWarning(const char* message) override
-        {
-            CCLOGWARN( "%s", message );
-        }
-        void logError(const char* message) override
-        {
-            CCLOGERROR( "%s", message );
-        }
+        void logDebug(const char* message) const override;
+        void logInfo(const char* message) const override;
+        void logWarning(const char* message) const override;
+        void logError(const char* message) const override;
     };
 }
 
