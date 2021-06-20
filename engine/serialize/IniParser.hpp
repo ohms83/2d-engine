@@ -1,6 +1,6 @@
 //
 //  IniParser.hpp
-//  BomberMan
+//  2D-Engine
 //
 //  Created by nuttachai on 12/2/21.
 //
@@ -19,7 +19,7 @@
 namespace serialize
 {
     /**
-     *  @c Config class stores data in
+     *  @c IniParser class stores data in
      *  [Category]
      *  key=value
      *  format, where each line can only contains one key/value pair and both leading and
@@ -32,15 +32,15 @@ namespace serialize
      *  [control]
      *  movespeed=10
      */
-    class Config final
+    class IniParser final
     {
     public:
         typedef std::map<std::string, std::string> ValueMap;
         typedef std::map<std::string, ValueMap> CategoryMap;
         
-        Config(bool caseSensitive = true) : m_caseSensitive(caseSensitive) {}
-        //! Construct a @c Config object and read the config file from the specified @c filePath
-        Config(const std::string& filePath, bool caseSensitive = false);
+        IniParser(bool caseSensitive = true) : m_caseSensitive(caseSensitive) {}
+        //! Construct a @c IniParser object and read the config file from the specified @c filePath
+        IniParser(const std::string& filePath, bool caseSensitive = false);
         
         //! Read config file from the specified @c filePath
         bool read(const std::string& filePath);

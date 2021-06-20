@@ -70,4 +70,6 @@ endif()
 
 target_compile_definitions(${PROJECT_NAME}
     PUBLIC $<$<CONFIG:Debug>:DEBUG=1>
+    # If defined, cocos2d::FileUtils will be used for file I/O operations instead of std::fstream
+    PRIVATE USE_CC_FILE_UTILS=1
 )

@@ -5,28 +5,32 @@
 //  Created by nuttachai on 12/2/21.
 //
 
-#include "Config.hpp"
+#include "IniParser.hpp"
 
 #include "engine/util/TypeCheck.h"
 
 #include <fstream>
+
+#ifdef USE_CC_FILE_UTILS
+    #include "cocos2d.h"
+#endif
 
 using namespace std;
 using namespace serialize;
 using namespace util;
 using namespace debug;
 
-const string Config::DELIMITER = "=";
-const string Config::COMMENT = "#;";
-const Config::ValueMap Config::EMPTY_VALUE;
+const string IniParser::DELIMITER = "=";
+const string IniParser::COMMENT = "#;";
+const IniParser::ValueMap IniParser::EMPTY_VALUE;
 
-Config::Config(const std::string& filePath, bool caseSensitive)
+IniParser::IniParser(const std::string& filePath, bool caseSensitive)
 : m_caseSensitive(caseSensitive)
 {
     read(filePath);
 }
 
-bool Config::parse(const std::string& configString)
+bool IniParser::parse(const std::string& configString)
 {
     stringstream ss;
     ss << configString;
@@ -35,7 +39,7 @@ bool Config::parse(const std::string& configString)
     return true;
 }
 
-bool Config::parse(std::istream& inputStream)
+bool IniParser::parse(std::istream& inputStream)
 {
     string line;
     string category;
@@ -75,35 +79,52 @@ bool Config::parse(std::istream& inputStream)
     return true;
 }
 
-bool Config::read(const std::string& filePath)
+bool IniParser::read(const std::string& filePath)
 {
+#ifdef USE_CC_FILE_UTILS
+    std::string fileData = cocos2d::FileUtils::getInstance()->getStringFromFile(filePath);
+    CHECK_IF_RETURN_MSG(!parse(fileData), false, "Error parsing file FILE=%s REASON=Parsing error", filePath.c_str());
+#else
     ifstream infile(filePath);
     CHECK_IF_RETURN_MSG(!infile.good(), false, "Error opening file FILE=%s REASON=Invalid file path", filePath.c_str());
     CHECK_IF_RETURN_MSG(!parse(infile), false, "Error parsing file FILE=%s REASON=Parsing error", filePath.c_str());
+#endif
     return true;
 }
 
-bool Config::write(const std::string& filePath) const
+bool IniParser::write(const std::string& filePath) const
 {
-    ofstream outfile(filePath);
-    CHECK_IF_RETURN_MSG(!outfile.good(), false, "Error writing to file. FILE=%s REASON=Invalid file path", filePath.c_str());
+#ifdef USE_CC_FILE_UTILS
+    stringstream outStream;
+#else
+    ofstream outStream(filePath);
+    CHECK_IF_RETURN_MSG(!outStream.good(), false, "Error writing to file. FILE=%s REASON=Invalid file path", filePath.c_str());
+#endif
     
     // TODO: Beautification
     for (const auto& categoryConfig : m_categories)
     {
         const string& category = categoryConfig.first;
-        outfile << '[' << category << ']' << std::endl;
+        outStream << '[' << category << ']' << std::endl;
         
         for (const auto& keyValue : categoryConfig.second)
         {
-            outfile << keyValue.first << DELIMITER << keyValue.second << std::endl;
+            outStream << keyValue.first << DELIMITER << keyValue.second << std::endl;
         }
     }
+
+#ifdef USE_CC_FILE_UTILS
+    CHECK_IF_RETURN_MSG(
+        cocos2d::FileUtils::getInstance()->writeStringToFile(outStream.str(), filePath),
+        false,
+        "Error writing to file. FILE=%s REASON=Invalid file path", filePath.c_str()
+    );
+#endif
     
     return true;
 }
 
-const Config::ValueMap& Config::getValues(const std::string& category) const
+const IniParser::ValueMap& IniParser::getValues(const std::string& category) const
 {
     std::string cat = util::strutil::trim(category);
     if (!m_caseSensitive) {
