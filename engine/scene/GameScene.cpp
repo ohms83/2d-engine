@@ -48,7 +48,6 @@ bool GameScene::init()
 
     auto overlay = getOverlay();
     overlay->removeFromParent();
-    addChild(overlay);
     
     return onInit();
 }
@@ -165,8 +164,7 @@ bool GameScene::loadSprite(const std::string& filePath)
 
 bool GameScene::loadSceneFile(const std::string& filePath)
 {
-    SceneParser parser(this);
-    return parser.parse(filePath);
+    return SceneParser::parseSceneFile(filePath, this);
 }
 
 void GameScene::changeSceneByName(const std::string& sceneName, cocos2d::FiniteTimeAction* fadeInEffect, cocos2d::FiniteTimeAction* fadeOutEffect)

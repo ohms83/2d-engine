@@ -8,16 +8,7 @@ class GameScene;
 class SceneParser
 {
 public:
-    SceneParser(GameScene* scene);
-    bool parse(const std::string& sceneFile);
-    bool parse(tinyxml2::XMLElement* element);
-
-protected:
-    bool parseResources(tinyxml2::XMLElement* element);
-    bool parseNodes(tinyxml2::XMLElement* element);
-
-protected:
-    GameScene* m_scene = nullptr;
+    static bool parseSceneFile(const std::string& sceneFile, GameScene* scene);
 };
 
 class NodeParser
@@ -42,8 +33,13 @@ public:
 protected:
     /// Parse node's attributes
     virtual void parseAttributes(tinyxml2::XMLElement* element);
-    /// Parse children elements
+    /// Parse child elements
     virtual void parseChildren(tinyxml2::XMLElement* element);
+    /**
+     * Inspect the tag name and parse the given element accordingly.
+     * @return @c true , if the element's tag name can be recognised and correctly parsed; otherwise, @c false
+     */
+    virtual bool parseElement(tinyxml2::XMLElement* element);
     /// Parse @c position element
     void parsePosition(tinyxml2::XMLElement* element);
     /// Parse @c scale element
@@ -52,6 +48,8 @@ protected:
     void parseSize(tinyxml2::XMLElement* element);
     /// Parse @c anchor element
     void parseAnchor(tinyxml2::XMLElement* element);
+    /// Parse @c color element
+    void parseColor(tinyxml2::XMLElement* element);
 
     virtual cocos2d::Node* createNode();
 
@@ -60,6 +58,20 @@ protected:
 protected:
     cocos2d::Node* m_parent = nullptr;
     cocos2d::Node* m_node = nullptr;
+};
+
+class SceneNodeParser : public NodeParser
+{
+public:
+    SceneNodeParser(GameScene* scene);
+protected:
+    cocos2d::Node* createNode() override;
+
+    bool parseElement(tinyxml2::XMLElement* element) override;
+    bool parseResources(tinyxml2::XMLElement* element);
+
+protected:
+    GameScene* m_scene = nullptr;
 };
 
 class SpriteNodeParser : public NodeParser
