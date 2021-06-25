@@ -257,7 +257,13 @@ bool SceneNodeParser::parseResources(tinyxml2::XMLElement* root)
     {
         if (!strcmp(element->Name(), "spriteFrame"))
         {
-            // TODO: Load sprite frame
+            const char* plist = element->Attribute("plist");
+            if(plist) {
+                SpriteFrameCache::getInstance()->addSpriteFramesWithFile(plist);
+            }
+            else {
+                LOG_ERROR("Error parsing <spriteFrame> REASON='plist' attribute is missing.");
+            }
         }
         else
         {
@@ -281,6 +287,7 @@ void SpriteNodeParser::parseAttributes(tinyxml2::XMLElement* element)
     LOG_ASSERT(sprite, "m_node is not a cocos2d::Sprite!");
     
     SET_STR_ATTRIBUTE(element, "texture", sprite, initWithFile);
+    SET_STR_ATTRIBUTE(element, "frame", sprite, initWithSpriteFrameName);
 
     NodeParser::parseAttributes(element);
 }
