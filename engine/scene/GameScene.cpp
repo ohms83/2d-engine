@@ -61,6 +61,8 @@ void GameScene::cleanup()
 
     m_resourceTasks.clear();
     m_bgInitTasks.clear();
+
+    SpriteFrameCache::getInstance()->removeUnusedSpriteFrames();
 }
 
 void GameScene::onEnter()
