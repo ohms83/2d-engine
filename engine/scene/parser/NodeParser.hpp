@@ -34,6 +34,13 @@ public:
     }
 
     /**
+     * If set, parsed position will be considered in Invert-Y coordinate and needs to be converted before assign to the node.
+     * @see cocosutil::inverseY
+     */
+    void setInvertY(bool flag);
+    bool isInvertY() const;
+
+    /**
      *  Used in @c type property of @c <position> and @c <size> tags. When data type is @c absolute
      *  the position and size parameters will be used as-is. When the type is undefined, the parameter
      *  will always be assumed this type.
@@ -84,4 +91,11 @@ protected:
 protected:
     cocos2d::Node* m_parent = nullptr;
     cocos2d::Node* m_node = nullptr;
+    /**
+     * If true, node's position will be considered in the Invert-Y coordinate.
+     * @see cocosutil::inverseY
+     */
+    bool m_invertY = false;
+    /// If true, the debug draw node will be attached to the current node.
+    bool m_debugDraw = false;
 };

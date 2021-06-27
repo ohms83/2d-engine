@@ -5,6 +5,7 @@
 
 #include "engine/debug/DebugMacros.h"
 #include "engine/util/TypeCheck.h"
+#include "engine/util/CocosUtil.hpp"
 
 USING_NS_CC;
 using namespace std;
@@ -15,6 +16,16 @@ const string NodeParser::RELATIVE_TYPE = "relative";
 NodeParser::NodeParser(Node* parent)
 {
     m_parent = parent;
+}
+
+void NodeParser::setInvertY(bool flag)
+{
+    m_invertY = flag;
+}
+
+bool NodeParser::isInvertY() const
+{
+    return m_invertY;
 }
 
 bool NodeParser::parseFile(const std::string& file)
@@ -63,6 +74,8 @@ void NodeParser::parseAttributes(tinyxml2::XMLElement* element)
     SET_XML_INT_ATTRIBUTE(element, "opacity", m_node, setOpacity);
     SET_XML_BOOL_ATTRIBUTE(element, "cascadeColorEnabled", m_node, setCascadeColorEnabled);
     SET_XML_BOOL_ATTRIBUTE(element, "cascadeOpacityEnabled", m_node, setCascadeOpacityEnabled);
+    
+    element->QueryBoolAttribute("debugDraw", &m_debugDraw);
 }
 
 void NodeParser::parseChildren(tinyxml2::XMLElement* element)
@@ -79,12 +92,23 @@ void NodeParser::parseChildren(tinyxml2::XMLElement* element)
         
         child = child->NextSiblingElement();
     }
+
+    if (m_debugDraw) {
+        util::cocosutil::attachDebugDrawToNode(m_node);
+    }
 }
 
 bool NodeParser::parseElement(tinyxml2::XMLElement* element)
 {
     const string elementName = element->Name();
     Node* childNode = nullptr;
+
+    #define PARSE_CHILD_NODE(_Parser, _invertY) { \
+        _Parser parser(m_node); \
+        parser.setInvertY(_invertY); \
+        childNode = parser.parse(element); \
+        CHECK_IF_RETURN(!childNode, false); \
+    }
 
     if (elementName == "position")
     {
@@ -108,21 +132,19 @@ bool NodeParser::parseElement(tinyxml2::XMLElement* element)
     }
     else if (elementName == "node")
     {
-        NodeParser parser(m_node);
-        childNode = parser.parse(element);
-        CHECK_IF_RETURN(!childNode, false);
+        PARSE_CHILD_NODE(NodeParser, isInvertY());
     }
     else if (elementName == "sprite")
     {
-        SpriteNodeParser parser(m_node);
-        childNode = parser.parse(element);
-        CHECK_IF_RETURN(!childNode, false);
+        PARSE_CHILD_NODE(SpriteNodeParser, isInvertY());
     }
     else if (elementName == "label")
     {
-        LabelNodeParser parser(m_node);
-        childNode = parser.parse(element);
-        CHECK_IF_RETURN(!childNode, false);
+        PARSE_CHILD_NODE(LabelNodeParser, isInvertY());
+    }
+    else if (elementName == "ui")
+    {
+        PARSE_CHILD_NODE(NodeParser, true);
     }
     else
     {
@@ -134,6 +156,7 @@ bool NodeParser::parseElement(tinyxml2::XMLElement* element)
         m_node->addChild(childNode);
     }
 
+    #undef PARSE_CHILD_NODE
     return true;
 }
 
@@ -159,6 +182,11 @@ void NodeParser::parsePosition(tinyxml2::XMLElement* element)
         }
     }
     
+    if (isInvertY())
+    {
+        cocos2d::Size parentSize = (m_parent ? m_parent->getContentSize() : cocos2d::Size::ZERO);
+        pos = util::cocosutil::inverseY(pos, parentSize);
+    }
     setPosition(pos);
 }
 

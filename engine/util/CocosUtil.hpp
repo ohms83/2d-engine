@@ -61,5 +61,22 @@ namespace util
         cocos2d::EventKeyboard::KeyCode parseKeyCode(const std::string& strKey);
         /// Mapping between strings and @c cocos2d::EventKeyboard::KeyCode keys
         extern const std::map<std::string, cocos2d::EventKeyboard::KeyCode> KEYCODE_MAP;
+
+        
+        /**
+         * Convert the give position into Invert-Y coordinate.
+         * By default, cocos2d's Y coordinate runs from bottom-to-top [0, winHeight] while screen coordinate's Y
+         * runs from top-to-bottom [winHeight, 0]. This function can be used for converting to/from both coordinate spaces
+         * using the following formula:
+         * @code
+         *   invertY = parentSize.height - pos.y
+         * @endcode
+         * This is useful for coverting UI coordinate from image authoring tools; eg., Photoshop or Gimp, into cocos2d's coordinate.
+         * 
+         * @param pos Original position to convert
+         * @param parentSize The size of node's parent. If not set, the function will assume viewport's size.
+         * @return Position in Invert-Y coordinate
+         */
+        cocos2d::Vec2 inverseY(const cocos2d::Vec2& pos, const cocos2d::Size& parentSize = cocos2d::Size::ZERO);
     }
 }
