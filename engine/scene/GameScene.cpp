@@ -166,7 +166,8 @@ bool GameScene::loadSprite(const std::string& filePath)
 
 bool GameScene::loadSceneFile(const std::string& filePath)
 {
-    return SceneParser::parseSceneFile(filePath, this);
+    SceneNodeParser parser(this);
+    return parser.parseFile(filePath);
 }
 
 void GameScene::changeSceneByName(const std::string& sceneName, cocos2d::FiniteTimeAction* fadeInEffect, cocos2d::FiniteTimeAction* fadeOutEffect)
