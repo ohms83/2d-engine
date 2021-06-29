@@ -35,8 +35,9 @@ bool NodeParser::parseFile(const std::string& file)
     tinyxml2::XMLDocument doc;
     
     const char* xmlFilePath = file.c_str();
+    std::string fileData = std::move(cocos2d::FileUtils::getInstance()->getStringFromFile(xmlFilePath));
     CHECK_IF_RETURN_MSG(
-        doc.LoadFile(xmlFilePath) != tinyxml2::XML_SUCCESS,
+        doc.Parse(fileData.c_str(), fileData.size()) != tinyxml2::XML_SUCCESS,
         false,
         "Error loading file FILE=%s ERROR1=%s ERROR2=%s",
         xmlFilePath,
