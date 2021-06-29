@@ -24,13 +24,13 @@ LabelNodeParser::LabelNodeParser(Node* parent)
 {
 
 }
-void LabelNodeParser::parseAttributes(tinyxml2::XMLElement* element)
+bool LabelNodeParser::parseAttributes(tinyxml2::XMLElement* element)
 {
     Label* label = dynamic_cast<Label*>(m_node);
-    LOG_ASSERT(label, "m_node is not a cocos2d::Label!");
+    CHECK_IF_RETURN_MSG(!label, false, "m_node is not a cocos2d::Label!");
 
     if (!parseFont(element, label)) {
-        return;
+        return false;
     }
     
     SET_XML_STR_ATTRIBUTE(element, "text", label, setString);
@@ -39,7 +39,7 @@ void LabelNodeParser::parseAttributes(tinyxml2::XMLElement* element)
     parseVAlign(element, label);
     parseHAlign(element, label);
 
-    NodeParser::parseAttributes(element);
+    return NodeParser::parseAttributes(element);
 }
 bool LabelNodeParser::parseFont(tinyxml2::XMLElement* element, cocos2d::Label* label)
 {
@@ -161,10 +161,6 @@ void LabelNodeParser::parseHAlign(tinyxml2::XMLElement* element, cocos2d::Label*
             LOG_WARNING("Unknown halign TYPE=%s", hAlign);
         }
     }
-}
-Node* LabelNodeParser::createNode()
-{
-    return Label::create();
 }
 
 void LabelNodeParser::setSize(const cocos2d::Size& size)

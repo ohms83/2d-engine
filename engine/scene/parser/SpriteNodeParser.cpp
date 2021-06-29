@@ -6,20 +6,22 @@
 USING_NS_CC;
 using namespace std;
 
-SpriteNodeParser::SpriteNodeParser(Node* parent)
-: NodeParser(parent)
+SpriteNodeParser::SpriteNodeParser(Node* node)
+: NodeParser(node)
 {
 
 }
-void SpriteNodeParser::parseAttributes(tinyxml2::XMLElement* element)
+
+bool SpriteNodeParser::parseAttributes(tinyxml2::XMLElement* element)
 {
     Sprite* sprite = dynamic_cast<Sprite*>(m_node);
-    LOG_ASSERT(sprite, "m_node is not a cocos2d::Sprite!");
+    CHECK_IF_RETURN_MSG(!sprite, false, "m_node is not a cocos2d::Sprite!");
     
     SET_XML_STR_ATTRIBUTE(element, "texture", sprite, initWithFile);
     SET_XML_STR_ATTRIBUTE(element, "frame", sprite, initWithSpriteFrameName);
 
     NodeParser::parseAttributes(element);
+    return true;
 }
 
 bool SpriteNodeParser::parseElement(tinyxml2::XMLElement* element)
@@ -28,8 +30,7 @@ bool SpriteNodeParser::parseElement(tinyxml2::XMLElement* element)
     // It's recommended that <resources> should be the top most tags; to prevent initialization errors.
     if (elementName == "sliced")
     {
-        parseSliced(element);
-        return true;
+        return parseSliced(element);
     }
     else
     {
@@ -37,10 +38,10 @@ bool SpriteNodeParser::parseElement(tinyxml2::XMLElement* element)
     }
 }
 
-void SpriteNodeParser::parseSliced(tinyxml2::XMLElement* element)
+bool SpriteNodeParser::parseSliced(tinyxml2::XMLElement* element)
 {
     Sprite* sprite = dynamic_cast<Sprite*>(m_node);
-    LOG_ASSERT(sprite, "m_node is not a cocos2d::Sprite!");
+    CHECK_IF_RETURN_MSG(!sprite, false, "m_node is not a cocos2d::Sprite!");
     
     Rect centerRect;
     element->QueryFloatAttribute("x", &centerRect.origin.x);
@@ -49,9 +50,5 @@ void SpriteNodeParser::parseSliced(tinyxml2::XMLElement* element)
     element->QueryFloatAttribute("h", &centerRect.size.height);
 
     sprite->setCenterRect(centerRect);
-}
-
-Node* SpriteNodeParser::createNode()
-{
-    return Sprite::create();
+    return true;
 }

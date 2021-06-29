@@ -23,10 +23,11 @@
 class NodeParser
 {
 public:
-    NodeParser(cocos2d::Node* parent);
+    /// Create a node parser for specified node
+    NodeParser(cocos2d::Node* node);
 
     bool parseFile(const std::string& file);
-    virtual cocos2d::Node* parse(tinyxml2::XMLElement* element);
+    bool parse(tinyxml2::XMLElement* element);
 
     virtual const std::string getRootTag()
     {
@@ -55,9 +56,9 @@ public:
 
 protected:
     /// Parse node's attributes
-    virtual void parseAttributes(tinyxml2::XMLElement* element);
-    /// Parse child elements
-    virtual void parseChildren(tinyxml2::XMLElement* element);
+    virtual bool parseAttributes(tinyxml2::XMLElement* element);
+    /// Loop over all child elements
+    virtual bool parseChildren(tinyxml2::XMLElement* element);
     /**
      * Inspect the tag name and parse the given element accordingly.
      * @return @c true , if the element's tag name can be recognised and correctly parsed; otherwise, @c false
@@ -84,9 +85,20 @@ protected:
     /// Set color of the current node
     virtual void setColor(const cocos2d::Color3B& color);
 
-    virtual cocos2d::Node* createNode();
-
     static bool checkIfRelative(tinyxml2::XMLElement* element);
+
+    /// Parse the given child node using specified parser.
+    template<typename _Parser, typename _NodeType>
+    bool parseChildElement(tinyxml2::XMLElement* element, bool invertY)
+    {
+        _NodeType* childNode = new (std::nothrow) _NodeType();
+        childNode->autorelease();
+        m_node->addChild(childNode);
+
+        _Parser parser(childNode);
+        parser.setInvertY(invertY);
+        return parser.parse(element);
+    }
 
 protected:
     cocos2d::Node* m_parent = nullptr;

@@ -9,16 +9,9 @@ USING_NS_CC;
 using namespace std;
 
 SceneNodeParser::SceneNodeParser(GameScene* scene)
-: NodeParser(nullptr)
+: NodeParser(scene)
 {
-    LOG_ASSERT(scene != nullptr, "scene cannot be NULL!");
-    m_scene = scene;
     m_director = Director::getInstance();
-}
-
-Node* SceneNodeParser::createNode()
-{
-    return static_cast<cocos2d::Node*>(m_scene);
 }
 
 bool SceneNodeParser::parseElement(tinyxml2::XMLElement* element)

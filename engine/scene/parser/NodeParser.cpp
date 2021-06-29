@@ -13,9 +13,11 @@ using namespace std;
 const string NodeParser::ABSOLUTE_TYPE = "absolute";
 const string NodeParser::RELATIVE_TYPE = "relative";
 
-NodeParser::NodeParser(Node* parent)
+NodeParser::NodeParser(Node* node)
 {
-    m_parent = parent;
+    LOG_ASSERT(node, "node cannot be NULL");
+    m_node = node;
+    m_parent = node->getParent();
 }
 
 void NodeParser::setInvertY(bool flag)
@@ -45,27 +47,27 @@ bool NodeParser::parseFile(const std::string& file)
     tinyxml2::XMLElement* sceneNode = doc.FirstChildElement(rootTag.c_str());
     CHECK_IF_NULL_RETURN_MSG(sceneNode, false, "Missing %s tag", rootTag.c_str());
 
-    return parse(sceneNode) != nullptr;
+    return parse(sceneNode);
 }
 
-Node* NodeParser::parse(tinyxml2::XMLElement* element)
+bool NodeParser::parse(tinyxml2::XMLElement* element)
 {
-    CHECK_IF_NULL_RETURN(element, nullptr);
+    CHECK_IF_NULL_RETURN(element, false);
 
-    m_node = createNode();
-    LOG_ASSERT(m_node != nullptr, "createNode returned nullptr!")
-
-    parseAttributes(element);
-    parseChildren(element);
-    return m_node;
+    if (!parseAttributes(element) || !parseChildren(element))
+    {
+        LOG_ERROR("Error parsing scene node TAG=%s", getRootTag().c_str());
+        return false;
+    }
+    return true;
 }
 
-void NodeParser::parseAttributes(tinyxml2::XMLElement* element)
+bool NodeParser::parseAttributes(tinyxml2::XMLElement* element)
 {
     const char* templateFile = element->Attribute("template");
-    if (templateFile)
+    if (templateFile && !parseFile(templateFile))
     {
-        parseFile(templateFile);
+        return false;
     }
 
     SET_XML_STR_ATTRIBUTE(element, "name", m_node, setName);
@@ -76,9 +78,11 @@ void NodeParser::parseAttributes(tinyxml2::XMLElement* element)
     SET_XML_BOOL_ATTRIBUTE(element, "cascadeOpacityEnabled", m_node, setCascadeOpacityEnabled);
     
     element->QueryBoolAttribute("debugDraw", &m_debugDraw);
+
+    return true;
 }
 
-void NodeParser::parseChildren(tinyxml2::XMLElement* element)
+bool NodeParser::parseChildren(tinyxml2::XMLElement* element)
 {
     tinyxml2::XMLElement* child = element->FirstChildElement();
     
@@ -87,7 +91,7 @@ void NodeParser::parseChildren(tinyxml2::XMLElement* element)
         if (!parseElement(child))
         {
             LOG_WARNING("Error parsing TAG=%s", child->Name());
-            return;
+            return false;
         }
         
         child = child->NextSiblingElement();
@@ -96,19 +100,13 @@ void NodeParser::parseChildren(tinyxml2::XMLElement* element)
     if (m_debugDraw) {
         util::cocosutil::attachDebugDrawToNode(m_node);
     }
+    return true;
 }
 
 bool NodeParser::parseElement(tinyxml2::XMLElement* element)
 {
     const string elementName = element->Name();
     Node* childNode = nullptr;
-
-    #define PARSE_CHILD_NODE(_Parser, _invertY) { \
-        _Parser parser(m_node); \
-        parser.setInvertY(_invertY); \
-        childNode = parser.parse(element); \
-        CHECK_IF_RETURN(!childNode, false); \
-    }
 
     if (elementName == "position")
     {
@@ -132,19 +130,19 @@ bool NodeParser::parseElement(tinyxml2::XMLElement* element)
     }
     else if (elementName == "node")
     {
-        PARSE_CHILD_NODE(NodeParser, isInvertY());
+        parseChildElement<NodeParser, Node>(element, isInvertY());
     }
     else if (elementName == "sprite")
     {
-        PARSE_CHILD_NODE(SpriteNodeParser, isInvertY());
+        parseChildElement<SpriteNodeParser, Sprite>(element, isInvertY());
     }
     else if (elementName == "label")
     {
-        PARSE_CHILD_NODE(LabelNodeParser, isInvertY());
+        parseChildElement<LabelNodeParser, Label>(element, isInvertY());
     }
     else if (elementName == "ui")
     {
-        PARSE_CHILD_NODE(NodeParser, true);
+        parseChildElement<NodeParser, Node>(element, true);
     }
     else
     {
@@ -152,11 +150,10 @@ bool NodeParser::parseElement(tinyxml2::XMLElement* element)
         return false;
     }
     
-    if (childNode) {
+    if (childNode && childNode->getParent() == nullptr) {
         m_node->addChild(childNode);
     }
 
-    #undef PARSE_CHILD_NODE
     return true;
 }
 
@@ -282,11 +279,6 @@ void NodeParser::setAnchor(const cocos2d::Vec2& anchor)
 void NodeParser::setColor(const cocos2d::Color3B& color)
 {
     m_node->setColor(color);
-}
-
-Node* NodeParser::createNode()
-{
-    return Node::create();
 }
 
 bool NodeParser::checkIfRelative(tinyxml2::XMLElement* element)

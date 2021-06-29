@@ -27,13 +27,11 @@ public:
     static const std::string ALIGN_RIGHT;
 
 protected:
-    void parseAttributes(tinyxml2::XMLElement* element) override;
+    bool parseAttributes(tinyxml2::XMLElement* element) override;
     bool parseFont(tinyxml2::XMLElement* element, cocos2d::Label* label);
     void parseOverflow(tinyxml2::XMLElement* element, cocos2d::Label* label);
     void parseVAlign(tinyxml2::XMLElement* element, cocos2d::Label* label);
     void parseHAlign(tinyxml2::XMLElement* element, cocos2d::Label* label);
 
-    cocos2d::Node* createNode() override;
-    
     void setSize(const cocos2d::Size& size) override;
 };

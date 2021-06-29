@@ -13,10 +13,8 @@ public:
     }
 
 protected:
-    void parseAttributes(tinyxml2::XMLElement* element) override;
+    bool parseAttributes(tinyxml2::XMLElement* element) override;
     bool parseElement(tinyxml2::XMLElement* element) override;
 
-    void parseSliced(tinyxml2::XMLElement* element);
-
-    cocos2d::Node* createNode() override;
+    bool parseSliced(tinyxml2::XMLElement* element);
 };
