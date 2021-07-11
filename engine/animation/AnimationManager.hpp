@@ -11,6 +11,7 @@
 #include "cocos2d.h"
 
 #include <map>
+#include <set>
 #include <string>
 #include <functional>
 
@@ -30,6 +31,7 @@ namespace animation
          *  @see animation::util::createAnimationListFromJson
          */
         void load(const std::string& file);
+        void loadList(const std::set<std::string>& fileList);
         
         /// Attach this object to the specified @c target sprite.
         void attach(cocos2d::Sprite* target);
