@@ -67,9 +67,6 @@ public:
     /// Exit from the current scene and returned to the previous one in scene stack.
     void popScene();
 
-    /// Temporary switch to and empty scene and then switch back.
-    void reloadScene();
-
     bool isSceneChanging() const;
 
     void setFadeInEffect(cocos2d::FiniteTimeAction* fadeInEffect);

@@ -278,16 +278,6 @@ void GameScene::changeScene(GameScene* next, bool pushFlg)
     runAction(sceneChangeAction);
 }
 
-void GameScene::reloadScene()
-{
-    GameScene* tmpScene = new GameScene();
-    tmpScene->setName("Step");
-    tmpScene->autorelease();
-    tmpScene->changeScene(this, true);
-
-    changeScene(tmpScene, true);
-}
-
 bool GameScene::isSceneChanging() const
 {
     return m_isSceneChanging;
