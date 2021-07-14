@@ -22,7 +22,6 @@ bool ProgressNodeParser::parseAttributes(tinyxml2::XMLElement* element)
     Sprite* sprite = Sprite::create();
     SET_XML_STR_ATTRIBUTE(element, "texture", sprite, initWithFile);
     SET_XML_STR_ATTRIBUTE(element, "frame", sprite, initWithSpriteFrameName);
-    SET_XML_FLOAT_ATTRIBUTE(element, "percent", progress, setPercentage);
 
     ProgressTimer::Type barType = ProgressTimer::Type::BAR;
     const char* type = element->Attribute("type");
@@ -42,6 +41,7 @@ bool ProgressNodeParser::parseAttributes(tinyxml2::XMLElement* element)
 
     progress->initWithSprite(sprite);
     progress->setType(barType);
+    SET_XML_FLOAT_ATTRIBUTE(element, "percent", progress, setPercentage);
 
     NodeParser::parseAttributes(element);
     return true;
