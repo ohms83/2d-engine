@@ -1,6 +1,7 @@
 list(APPEND ENGINE_HEADER
     engine/scene/parser/LabelNodeParser.hpp
     engine/scene/parser/NodeParser.hpp
+    engine/scene/parser/ProgressNodeParser.hpp
     engine/scene/parser/SceneNodeParser.hpp
     engine/scene/parser/SpriteNodeParser.hpp
     engine/scene/FullScreenEffect.hpp
@@ -12,6 +13,7 @@ list(APPEND ENGINE_HEADER
 list(APPEND ENGINE_SOURCE
     engine/scene/parser/LabelNodeParser.cpp
     engine/scene/parser/NodeParser.cpp
+    engine/scene/parser/ProgressNodeParser.cpp
     engine/scene/parser/SceneNodeParser.cpp
     engine/scene/parser/SpriteNodeParser.cpp
     engine/scene/FullScreenEffect.cpp

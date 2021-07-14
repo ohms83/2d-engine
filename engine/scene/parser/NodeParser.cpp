@@ -2,6 +2,7 @@
 
 #include "LabelNodeParser.hpp"
 #include "SpriteNodeParser.hpp"
+#include "ProgressNodeParser.hpp"
 
 #include "engine/debug/DebugMacros.h"
 #include "engine/util/TypeCheck.h"
@@ -77,6 +78,7 @@ bool NodeParser::parseAttributes(tinyxml2::XMLElement* element)
     SET_XML_INT_ATTRIBUTE(element, "opacity", m_node, setOpacity);
     SET_XML_BOOL_ATTRIBUTE(element, "cascadeColorEnabled", m_node, setCascadeColorEnabled);
     SET_XML_BOOL_ATTRIBUTE(element, "cascadeOpacityEnabled", m_node, setCascadeOpacityEnabled);
+    SET_XML_BOOL_ATTRIBUTE(element, "visible", m_node, setVisible);
     
     element->QueryBoolAttribute("debugDraw", &m_debugDraw);
 
@@ -140,6 +142,10 @@ bool NodeParser::parseElement(tinyxml2::XMLElement* element)
     else if (elementName == "label")
     {
         parseChildElement<LabelNodeParser, Label>(element, isInvertY());
+    }
+    else if (elementName == "progress")
+    {
+        parseChildElement<ProgressNodeParser, ProgressTimer>(element, isInvertY());
     }
     else if (elementName == "ui")
     {
