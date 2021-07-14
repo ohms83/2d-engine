@@ -93,6 +93,9 @@ protected:
     {
         _NodeType* childNode = new (std::nothrow) _NodeType();
         childNode->autorelease();
+        childNode->setCascadeOpacityEnabled(m_node->isCascadeOpacityEnabled());
+        childNode->setCascadeColorEnabled(m_node->isCascadeColorEnabled());
+        
         m_node->addChild(childNode);
 
         _Parser parser(childNode);

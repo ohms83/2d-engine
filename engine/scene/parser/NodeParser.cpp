@@ -76,8 +76,8 @@ bool NodeParser::parseAttributes(tinyxml2::XMLElement* element)
     SET_XML_INT_ATTRIBUTE(element, "zOrder", m_node, setLocalZOrder);
     SET_XML_FLOAT_ATTRIBUTE(element, "rotation", m_node, setRotation);
     SET_XML_INT_ATTRIBUTE(element, "opacity", m_node, setOpacity);
-    SET_XML_BOOL_ATTRIBUTE(element, "cascadeColorEnabled", m_node, setCascadeColorEnabled);
-    SET_XML_BOOL_ATTRIBUTE(element, "cascadeOpacityEnabled", m_node, setCascadeOpacityEnabled);
+    SET_XML_BOOL_ATTRIBUTE(element, "cascadeColor", m_node, setCascadeColorEnabled);
+    SET_XML_BOOL_ATTRIBUTE(element, "cascadeOpacity", m_node, setCascadeOpacityEnabled);
     SET_XML_BOOL_ATTRIBUTE(element, "visible", m_node, setVisible);
     
     element->QueryBoolAttribute("debugDraw", &m_debugDraw);
@@ -155,10 +155,6 @@ bool NodeParser::parseElement(tinyxml2::XMLElement* element)
     {
         LOG_WARNING("Unknown tag TAG=%s", elementName.c_str());
         return false;
-    }
-    
-    if (childNode && childNode->getParent() == nullptr) {
-        m_node->addChild(childNode);
     }
 
     return true;
