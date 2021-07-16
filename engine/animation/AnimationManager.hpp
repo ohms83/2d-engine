@@ -31,7 +31,7 @@ namespace animation
          *  @see animation::util::createAnimationListFromJson
          */
         void load(const std::string& file);
-        void loadList(const std::set<std::string>& fileList);
+        void loadList(const std::vector<std::string>& fileList);
         
         /// Attach this object to the specified @c target sprite.
         void attach(cocos2d::Sprite* target);

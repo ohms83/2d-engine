@@ -47,18 +47,10 @@ void AnimationManager::load(const string& file)
     LOG_DEBUG("%s", fileName.c_str());
 
     m_animList.insert(fileName, anim);
-    
-    int baseTag = cocos2d::random();
-    int index = 0;
-    
-    for (const auto& keyValue : m_animList)
-    {
-        const string& animName = keyValue.first;
-        m_animTags.emplace(animName, baseTag + (index++));
-    }
+    m_animTags.emplace(fileName, (int)m_animList.size());
 }
 
-void AnimationManager::loadList(const set<string>& fileList)
+void AnimationManager::loadList(const vector<string>& fileList)
 {
     for (const auto& file : fileList)
     {
@@ -134,13 +126,7 @@ bool AnimationManager::isPlaying(const string& animName) const
     }
     
     const int tag = m_animTags.at(animName);
-    if (tag != m_runningAction->getTag())
-    {
-        return false;
-    }
-    
-    Vector<Action*> actions = m_target->getAllActionsByTag(tag);
-    return actions.getIndex(m_runningAction) != -1;
+    return tag != m_runningAction->getTag();
 }
 
 bool AnimationManager::isPlaying() const
