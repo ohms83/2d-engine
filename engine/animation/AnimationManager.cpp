@@ -10,7 +10,11 @@
 #include "util/TypeCheck.h"
 #include "util/StringUtil.hpp"
 
-#include <filesystem>
+#ifdef USE_STD_FILESYSTEM
+    #include <filesystem>
+#else
+    #include "base/Path.hpp"
+#endif
 
 using namespace animation;
 using namespace debug;
@@ -39,11 +43,16 @@ void AnimationManager::attach(Sprite* target)
 void AnimationManager::load(const string& file)
 {
     Animation* anim = animationUtil::createAnimation(file);
+    string fileName;
 
+#ifdef USE_STD_FILESYSTEM
     stringstream ss;
     ss << std::filesystem::path(file).filename().replace_extension("");
     // std::filesystem::path::filename() returns file name enclosed by double quotes. They need to be removed.
-    string fileName = util::strutil::trim(ss.str(), "\f\n\r\t\v\"");
+    fileName = util::strutil::trim(ss.str(), "\f\n\r\t\v\"");
+#else
+    fileName = Path(file).fileName();
+#endif
     LOG_DEBUG("%s", fileName.c_str());
 
     m_animList.insert(fileName, anim);
