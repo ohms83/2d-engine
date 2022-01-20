@@ -15,7 +15,7 @@ using namespace std;
 using namespace serialize;
 using namespace debug;
 
-cocos2d::Animation* animation::util::parseAnimationJson(istream& input)
+cocos2d::Animation* animationUtil::parseAnimation(istream& input)
 {
     CHECK_IF_RETURN_MSG(!input.good(), nullptr, "Parsing Error. REASON=Invalid input stream");
     
@@ -120,7 +120,7 @@ cocos2d::Animation* animation::util::parseAnimationJson(istream& input)
     return result;
 }
 
-cocos2d::Animation* animation::util::createAnimationFromJson(const string& jsonFile)
+cocos2d::Animation* animationUtil::createAnimation(const string& jsonFile)
 {
     static cocos2d::FileUtils* fileUtils = cocos2d::FileUtils::getInstance();
     
@@ -129,59 +129,5 @@ cocos2d::Animation* animation::util::createAnimationFromJson(const string& jsonF
     string jsonStr = fileUtils->getStringFromFile(jsonFile);
     stringstream ss;
     ss << jsonStr;
-    return parseAnimationJson(ss);
-}
-
-cocos2d::Map<std::string, cocos2d::Animation*> animation::util::parseAnimationListJson(istream& input)
-{
-    cocos2d::Map<std::string, cocos2d::Animation*> animList = cocos2d::Map<std::string, cocos2d::Animation*>();
-    
-    CHECK_IF_RETURN_MSG(!input.good(), animList, "Parsing Error. REASON=Invalid input stream");
-    
-    JsonSerializer serializer;
-    Serializable serializeObj = serializer.unpack(input);
-    
-    if (serializeObj.getType() != Serializable::Type::MAP)
-    {
-        string json;
-        input.seekg(0);
-        input >> json;
-        
-        stringstream ss;
-        ss << "[animation::util::parseAnimationJson] Parsing Error. REASON=Invalid JSON format"
-            << " JSON=" << json;
-        LOG_ERROR("%s", ss.str().c_str());
-        return animList;
-    }
-    
-    const Serializable::Map& mapData = serializeObj.getMap();
-    
-    for (const auto& keyValue : mapData)
-    {
-        const string& name = keyValue.first;
-        const string& animFilePath = keyValue.second.getString();
-        cocos2d::Animation* animation = animation::util::createAnimationFromJson(animFilePath);
-        
-        if (animation) {
-            animList.insert(name, animation);
-        }
-    }
-    
-    return animList;
-}
-
-cocos2d::Map<std::string, cocos2d::Animation*> animation::util::createAnimationListFromJson(const string& jsonFile)
-{
-    static cocos2d::FileUtils* fileUtils = cocos2d::FileUtils::getInstance();
-    
-    if (fileUtils->isFileExist(jsonFile))
-    {
-        string jsonStr = fileUtils->getStringFromFile(jsonFile);
-        stringstream ss;
-        ss << jsonStr;
-        return parseAnimationListJson(ss);
-    }
-    
-    LOG_ERROR("Parsing error REASON=Invalid file path FILE=%s", jsonFile.c_str());
-    return cocos2d::Map<std::string, cocos2d::Animation*>();
+    return parseAnimation(ss);
 }

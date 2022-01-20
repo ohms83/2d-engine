@@ -223,7 +223,7 @@ void cocosutil::attachDebugDrawToNode(Node* target, int axisWidth, int axisLengt
     // Draw content rect
     {
         DrawNode* debugNode = DrawNode::create();
-        
+
         const Size& size = target->getContentSize();
         Vec2 recOrg = Vec2(0, 0);
         Vec2 recDir = Vec2(recOrg.x + size.width, recOrg.y + size.height);
@@ -243,4 +243,12 @@ EventKeyboard::KeyCode cocosutil::parseKeyCode(const string& strKey)
 {
     auto itr = KEYCODE_MAP.find(strKey);
     return (itr == KEYCODE_MAP.end() ? EventKeyboard::KeyCode::KEY_NONE : itr->second);
+}
+
+Vec2 cocosutil::inverseY(const Vec2& pos, const cocos2d::Size& parentSize)
+{
+    auto visibleSize = ( parentSize.equals(cocos2d::Size::ZERO) ? Director::getInstance()->getVisibleSize() : parentSize );
+    Vec2 outPos(pos.x, 0);
+    outPos.y = visibleSize.height - pos.y;
+    return outPos;
 }

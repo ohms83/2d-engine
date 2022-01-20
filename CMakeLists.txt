@@ -154,3 +154,21 @@ if(LINUX OR WINDOWS)
     cocos_get_resource_path(APP_RES_DIR ${APP_NAME})
     cocos_copy_target_res(${APP_NAME} LINK_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER})
 endif()
+
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+if(LOG_EMOJI)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE LOG_EMOJI
+    )
+elseif(LOG_COLOR_SCHEME)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE LOG_COLOR_SCHEME
+    )
+endif()
+
+target_compile_definitions(${PROJECT_NAME}
+    PUBLIC $<$<CONFIG:Debug>:DEBUG=1>
+    # If defined, cocos2d::FileUtils will be used for file I/O operations instead of std::fstream
+    PRIVATE USE_CC_FILE_UTILS=1
+)

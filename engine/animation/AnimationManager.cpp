@@ -8,11 +8,15 @@
 #include "AnimationManager.hpp"
 #include "AnimationUtil.hpp"
 #include "util/TypeCheck.h"
+#include "util/StringUtil.hpp"
+
+#include <filesystem>
 
 using namespace animation;
 using namespace debug;
 
 USING_NS_CC;
+using namespace std;
 
 AnimationManager::AnimationManager()
 {
@@ -25,28 +29,36 @@ AnimationManager::~AnimationManager()
     CC_SAFE_RELEASE(m_runningAction);
 }
 
-void AnimationManager::attach(cocos2d::Sprite* target)
+void AnimationManager::attach(Sprite* target)
 {
     CC_SAFE_RELEASE(m_target);
     m_target = target;
     CC_SAFE_RETAIN(m_target);
 }
 
-void AnimationManager::load(const std::string& file)
+void AnimationManager::load(const string& file)
 {
-    m_animList = animation::util::createAnimationListFromJson(file);
-    
-    int baseTag = cocos2d::random();
-    int index = 0;
-    
-    for (const auto& keyValue : m_animList)
+    Animation* anim = animationUtil::createAnimation(file);
+
+    stringstream ss;
+    ss << std::filesystem::path(file).filename().replace_extension("");
+    // std::filesystem::path::filename() returns file name enclosed by double quotes. They need to be removed.
+    string fileName = util::strutil::trim(ss.str(), "\f\n\r\t\v\"");
+    LOG_DEBUG("%s", fileName.c_str());
+
+    m_animList.insert(fileName, anim);
+    m_animTags.emplace(fileName, (int)m_animList.size());
+}
+
+void AnimationManager::loadList(const vector<string>& fileList)
+{
+    for (const auto& file : fileList)
     {
-        const std::string& animName = keyValue.first;
-        m_animTags.emplace(animName, baseTag + (index++));
+        load(file);
     }
 }
 
-void AnimationManager::play(const std::string& animName)
+void AnimationManager::play(const string& animName)
 {
     CHECK_IF_NULL_MSG(m_target, "Error. There's no attached Sprite target.");
     
@@ -98,7 +110,7 @@ void AnimationManager::stop()
     m_runningAnimationName.clear();
 }
 
-bool AnimationManager::isPlaying(const std::string& animName) const
+bool AnimationManager::isPlaying(const string& animName) const
 {
     if (!isPlaying())
     {
@@ -114,13 +126,7 @@ bool AnimationManager::isPlaying(const std::string& animName) const
     }
     
     const int tag = m_animTags.at(animName);
-    if (tag != m_runningAction->getTag())
-    {
-        return false;
-    }
-    
-    Vector<Action*> actions = m_target->getAllActionsByTag(tag);
-    return actions.getIndex(m_runningAction) != -1;
+    return tag != m_runningAction->getTag();
 }
 
 bool AnimationManager::isPlaying() const
@@ -138,7 +144,7 @@ void AnimationManager::onAnimEnd()
     m_runningAnimationName.clear();
 }
 
-void AnimationManager::registerAnimEndCallback(std::function<void(const std::string&)> callback)
+void AnimationManager::registerAnimEndCallback(function<void(const string&)> callback)
 {
     m_animEndCallback = callback;
 }

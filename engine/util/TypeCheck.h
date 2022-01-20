@@ -3,7 +3,7 @@
 #include "engine/platform/PlatformMacros.h"
 
 /**
- *  If the @c _condition is @c false, the caller function will be immediately returned.
+ *  If the @c _condition is @c true, the caller function will be immediately returned.
  */
 #define CHECK_IF(_condition) \
 if(_condition) { \
@@ -12,7 +12,7 @@ if(_condition) { \
 }
 
 /**
- *  If the @c _condition is @c false, the caller function will be immediately returned.
+ *  If the @c _condition is @c true, the caller function will be immediately returned.
  */
 #define CHECK_IF_MSG(_condition, fmt, ...) \
 if(_condition) { \
@@ -21,7 +21,7 @@ if(_condition) { \
 }
 
 /**
- *  If the @c _condition is @c false, the caller function will be immediately returned with @c _returnValue.
+ *  If the @c _condition is @c true, the caller function will be immediately returned with @c _returnValue.
  */
 #define CHECK_IF_RETURN(_condition, _returnValue) \
 if(_condition) { \
@@ -30,7 +30,7 @@ if(_condition) { \
 }
 
 /**
- *  If the @c _condition is @c false, the caller function will be immediately returned with @c _returnValue.
+ *  If the @c _condition is @c true, the caller function will be immediately returned with @c _returnValue.
  */
 #define CHECK_IF_RETURN_MSG(_condition, _returnValue, fmt, ...) \
 if(_condition) { \
