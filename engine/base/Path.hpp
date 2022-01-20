@@ -20,7 +20,7 @@ public:
     /// Return a normalized filepath of @c path where the extra path-separators are all removed.
     std::string normalize();
     /**
-     * Return file name of the current filepath. If the filepath ends with path-separator or dot, 
+     * Return file name of the current filepath.
      * @param withExt If true, the returned file name will also contain file's extension (if exists).
      * @return If @c path is a directory (ending with the @c SEPARATOR ), root path (.) or top folder (..),
      *         an empty string will be returned; otherwise, returning file name with or without extension.
